@@ -1,9 +1,10 @@
 class CalendarsController < ApplicationController
-  before_action :set_calendar, only: %i[ show update destroy ]
+  before_action :set_calendar, only: %i[show update destroy]
+  before_action :authenticate_user!
 
   # GET /calendars
   def index
-    @calendars = Calendar.all
+    @calendars = current_user.calendars
 
     render json: @calendars
   end
@@ -15,7 +16,7 @@ class CalendarsController < ApplicationController
 
   # POST /calendars
   def create
-    @calendar = Calendar.new(calendar_params)
+    @calendar = current_user.calendars.create(calendar_params)
 
     if @calendar.save
       render json: @calendar, status: :created, location: @calendar
@@ -39,13 +40,14 @@ class CalendarsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_calendar
-      @calendar = Calendar.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def calendar_params
-      params.require(:calendar).permit(:name)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_calendar
+    @calendar = Calendar.find(params[:id])
+  end
+
+  # Only allow a list of trusted parameters through.
+  def calendar_params
+    params.require(:calendar).permit(:name)
+  end
 end
