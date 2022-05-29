@@ -10,11 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_05_27_205502) do
+ActiveRecord::Schema[7.0].define(version: 2022_05_29_204938) do
   create_table "calendars", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "active", null: false
   end
 
   create_table "calendars_users", id: false, force: :cascade do |t|
