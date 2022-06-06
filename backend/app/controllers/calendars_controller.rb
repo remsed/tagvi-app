@@ -19,13 +19,10 @@ class CalendarsController < ApplicationController
 
   # POST /calendars
   def create
-    calendar_status = calendar_params[:active]
-
-    if active?(calendar_status)
-      set_calendar_status
-    end
-
-    @calendar = current_user.calendars.create(calendar_params)
+    calendar_params_obj = calendar_params
+    calendar_status = calendar_params_obj[:active]
+    set_calendar_status if active?(calendar_status)
+    @calendar = current_user.calendars.create(calendar_params_obj)
     if @calendar.save
       render json: @calendar, status: :created, location: @calendar
     else
@@ -39,7 +36,7 @@ class CalendarsController < ApplicationController
     # calendar_name = calendar_params[:name]
 
     # if active?(calendar_status)
-      
+
     # if
     #   active_calendar = current_user.calendars.find_by active: 'true'
     #   active_calendar.active = 'false'
@@ -73,12 +70,13 @@ class CalendarsController < ApplicationController
     params.require(:calendar).permit(:name, :active)
   end
 
+  # Set active calendar status to false
   def set_calendar_status
-      active_calendar = current_user.calendars.find_by active: 'true'
-      active_calendar.active = 'false'
-      active_calendar.save
+    active_calendar = current_user.calendars.find_by active: 'true'
+    active_calendar.active = 'false'
+    active_calendar.save
   end
-  
+
   # Verify if value is true
   def active?(obj)
     obj.to_s.downcase == 'true'
