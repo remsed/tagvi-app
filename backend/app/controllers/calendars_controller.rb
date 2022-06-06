@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# This controller implements calendar actions
 class CalendarsController < ApplicationController
   before_action :set_calendar, only: %i[show update destroy]
   before_action :authenticate_user!
@@ -16,8 +19,13 @@ class CalendarsController < ApplicationController
 
   # POST /calendars
   def create
-    @calendar = current_user.calendars.create(calendar_params)
+    calendar_status = calendar_params[:active]
 
+    if active?(calendar_status)
+      set_calendar_status
+    end
+
+    @calendar = current_user.calendars.create(calendar_params)
     if @calendar.save
       render json: @calendar, status: :created, location: @calendar
     else
@@ -27,6 +35,20 @@ class CalendarsController < ApplicationController
 
   # PATCH/PUT /calendars/1
   def update
+    # calendar_status = calendar_params[:active]
+    # calendar_name = calendar_params[:name]
+
+    # if active?(calendar_status)
+      
+    # if
+    #   active_calendar = current_user.calendars.find_by active: 'true'
+    #   active_calendar.active = 'false'
+    # else
+    #   active_calendar = current_user.calendars.find_by active: 'false'
+    #   active_calendar.active = 'true'
+    # end
+    # active_calendar.save
+
     if @calendar.update(calendar_params)
       render json: @calendar
     else
@@ -48,6 +70,17 @@ class CalendarsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def calendar_params
-    params.require(:calendar).permit(:name)
+    params.require(:calendar).permit(:name, :active)
+  end
+
+  def set_calendar_status
+      active_calendar = current_user.calendars.find_by active: 'true'
+      active_calendar.active = 'false'
+      active_calendar.save
+  end
+  
+  # Verify if value is true
+  def active?(obj)
+    obj.to_s.downcase == 'true'
   end
 end
