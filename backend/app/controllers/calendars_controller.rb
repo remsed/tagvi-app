@@ -30,7 +30,7 @@ class CalendarsController < ApplicationController
 
   # PATCH/PUT /calendars/1
   def update
-    # calendar_params_obj = verify_update(calendar_params)
+    calendar_params_obj = verify_update(calendar_params)
 
     if @calendar.update(calendar_params_obj)
       render json: @calendar
@@ -61,9 +61,18 @@ class CalendarsController < ApplicationController
   end
 
   # Verify calendar update
-  # def verify_update(calendar_params_obj)
-
-  # end
+  def verify_update(calendar_params_obj)
+    if active?(calendar_params_obj[:active])
+      unless last_calendar?
+        active_calendar = current_user.calendars.find_by active: 'true'
+        active_calendar.active = 'false'
+        active_calendar.save
+      end
+    elsif last_calendar?
+      calendar_params_obj[:active] = 'true'
+    end
+    calendar_params_obj
+  end
 
   # Check if calendar first
   def first_calendar?
