@@ -1,11 +1,13 @@
+# frozen_string_literal: true
+
+# This controller implements event actions
 class EventsController < ApplicationController
   before_action :set_event, only: %i[show update destroy]
   before_action :authenticate_user!
 
   # GET /events
   def index
-    @interim_events = current_user.events
-
+    @events = current_user.events.where(calendar_id: active_calendar_id?)
 
     render json: @events
   end
@@ -41,6 +43,12 @@ class EventsController < ApplicationController
   end
 
   private
+
+  # Return active calendar ID
+  def active_calendar_id?
+    active_calendar = current_user.calendars.find_by active: 'true'
+    active_calendar[:id]
+  end
 
   # Use callbacks to share common setup or constraints between actions.
   def set_event
