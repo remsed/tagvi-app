@@ -41,10 +41,21 @@ class CalendarsController < ApplicationController
 
   # DELETE /calendars/1
   def destroy
+    verify_destroy(@calendar)
     @calendar.destroy
   end
 
   private
+
+  # Verify calendar destroy
+  def verify_destroy(calendar_obj)
+    calendar_status = calendar_obj[:active]
+    return unless active?(calendar_status) && !last_calendar?
+
+    active_calendar = Calendar.find(params[:id].to_i - 1)
+    active_calendar.active = 'true'
+    active_calendar.save
+  end
 
   # Verify calendar create
   def verify_create(calendar_params_obj)
