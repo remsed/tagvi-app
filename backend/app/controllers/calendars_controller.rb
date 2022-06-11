@@ -49,38 +49,37 @@ class CalendarsController < ApplicationController
 
   # Verify calendar destroy
   def verify_destroy(calendar_obj)
-    calendar_status = calendar_obj[:active]
-    return unless active?(calendar_status) && !last_calendar?
+    return unless calendar_obj[:active] && !last_calendar?
 
     active_calendar = Calendar.find(params[:id].to_i - 1)
-    active_calendar.active = 'true'
+    active_calendar.active = true
     active_calendar.save
   end
 
   # Verify calendar create
   def verify_create(calendar_params_obj)
-    if active?(calendar_params_obj[:active])
+    if calendar_params_obj[:active]
       unless first_calendar?
-        active_calendar = current_user.calendars.find_by active: 'true'
-        active_calendar.active = 'false'
+        active_calendar = current_user.calendars.find_by active: true
+        active_calendar.active = false
         active_calendar.save
       end
     elsif first_calendar?
-      calendar_params_obj[:active] = 'true'
+      calendar_params_obj[:active] = true
     end
     calendar_params_obj
   end
 
   # Verify calendar update
   def verify_update(calendar_params_obj)
-    if active?(calendar_params_obj[:active])
+    if calendar_params_obj[:active]
       unless last_calendar?
-        active_calendar = current_user.calendars.find_by active: 'true'
-        active_calendar.active = 'false'
+        active_calendar = current_user.calendars.find_by active: true
+        active_calendar.active = false
         active_calendar.save
       end
     elsif last_calendar?
-      calendar_params_obj[:active] = 'true'
+      calendar_params_obj[:active] = true
     end
     calendar_params_obj
   end
@@ -88,13 +87,13 @@ class CalendarsController < ApplicationController
   # Check if calendar first
   def first_calendar?
     all_calendars = current_user.calendars.all
-    'true' if all_calendars.size.zero?
+    true if all_calendars.size.zero?
   end
 
   # Check if calendar last
   def last_calendar?
     all_calendars = current_user.calendars.all
-    'true' if all_calendars.size == 1
+    true if all_calendars.size == 1
   end
 
   # Use callbacks to share common setup or constraints between actions.
@@ -105,10 +104,5 @@ class CalendarsController < ApplicationController
   # Only allow a list of trusted parameters through.
   def calendar_params
     params.require(:calendar).permit(:name, :active)
-  end
-
-  # Verify if value is true
-  def active?(obj)
-    obj.to_s.downcase == 'true'
   end
 end
