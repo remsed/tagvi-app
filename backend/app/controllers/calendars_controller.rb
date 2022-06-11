@@ -51,9 +51,16 @@ class CalendarsController < ApplicationController
   def verify_destroy(calendar_obj)
     return unless calendar_obj[:active] && !last_calendar?
 
-    active_calendar = Calendar.find(params[:id].to_i - 1)
-    active_calendar.active = true
-    active_calendar.save
+    # active_calendar = Calendar.find(params[:id].to_i - 1)
+    last_calendar = current_user.calendars.last
+    if last_calendar[:id] != calendar_obj[:id]
+      last_calendar.active = true
+      last_calendar.save
+    else
+      first_calendar = current_user.calendars.first
+      first_calendar.active = true
+      first_calendar.save
+    end
   end
 
   # Verify calendar create
