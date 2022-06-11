@@ -99,7 +99,7 @@ class CalendarsController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_calendar
-    @calendar = Calendar.find(params[:id])
+    @calendar = current_user.calendars.find(params[:id])
   end
 
   # Only allow a list of trusted parameters through.
