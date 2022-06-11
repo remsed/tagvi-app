@@ -19,7 +19,7 @@ class EventsController < ApplicationController
 
   # POST /events
   def create
-    @event = Event.new(event_params)
+    @event = current_user.events.create(event_params)
 
     if @event.save
       render json: @event, status: :created, location: @event
@@ -52,7 +52,7 @@ class EventsController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_event
-    @event = Event.find(params[:id])
+    @event = current_user.events.find(params[:id])
   end
 
   # Only allow a list of trusted parameters through.
